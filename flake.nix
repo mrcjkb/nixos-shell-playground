@@ -16,9 +16,20 @@
     pkgs = nixpkgs.legacyPackages.${system};
   in {
     devShells.${system}.default = pkgs.mkShell {
-      buildInputs = with pkgs; [
-        nixos-shell
+      buildInputs = [
+        pkgs.nixos-shell
       ];
+    };
+
+    nixosConfigurations = {
+      vm = nixpkgs.lib.nixosSystem {
+        inherit system;
+        modules = [
+          ({pkgs, ...}: {
+            boot.kernelPackages = pkgs.linuxKernel.packages.linux_6_9;
+          })
+        ];
+      };
     };
   };
 }
